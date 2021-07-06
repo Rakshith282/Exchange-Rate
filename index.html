@@ -1,1 +1,78 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width">
+        <title>Exchange Rate</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
 
+    <body>
+        <div class="container">
+            <h1>Exchange Rate</h1><br>
+            <h3>Convert your currency here!!</h3>
+            <div class="box">
+                <div class="left-box">
+                    <select name="currency" class="currency"></select>
+                    <input type="number" name="" id="num">
+                </div>
+                <div class="right-box">
+                    <select name="currency" class="currency"></select>
+                    <input type="text" name="" id="ans" disabled>
+                </div>
+            </div>
+            <button class="btn" id="btn" onclick="convert">Convert</button>
+        </div>
+
+
+        <script>
+            const select = document.querySelectorAll('.currency');
+            const btn = document.getElementById('btn');
+            const num = document.getElementById('num');
+            const ans = document.getElementById('ans');
+
+            fetch( 'https://v6.exchangerate-api.com/v6/f42f70ddbfd9bc112ea048b4/latest/USD' )
+            .then((data) => data.json())
+            .then((data) => {
+                display(data);
+            });
+
+            function display(data){
+                const entries = Object.entries(data);
+                console.log(entries.length) 
+                for(var i = 0; i<entries.length; i++)
+                {
+                    select[0].innerHTML += `<option value="${entries[i][0]}">${entries[i][0]}</option>`
+                    select[1].innerHTML += `<option value="${entries[i][1]}">${entries[i][1]}</option>`
+
+                }
+
+            }
+
+            btn.addEventListener("click",() => {
+                let currency1 = select[0].value;
+                let currency2 = select[1].value;
+                let value = num.value;
+
+                if (currency1 != currency2) {
+                    convert(currency1, currency2, value);                    
+                }
+                else{
+                    alert("Choose Different Currencies")
+                }
+
+            });
+
+            function  convert(currency1, currency2, value){
+                
+                fetch(`https://v6.exchangerate-api.com/v6/f42f70ddbfd9bc112ea048b4/latest/${value}&from=${currency1}&to=${currency2}`)
+                .then((val) => val.json())
+                .then((val)=> {
+                    console.log(Object.values(val,rates)[0]);
+                    ans.value = Object.values(val,rates)[1]; 
+                })
+                
+            }      
+        </script>
+    </body>
+</html>
